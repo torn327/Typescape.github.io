@@ -8,6 +8,7 @@ const wss = new WebSocket.Server({ server });
 
 let connections = [];
 
+// WebSocket connection handler
 wss.on('connection', (ws) => {
     console.log('New client connected');
     connections.push(ws);
