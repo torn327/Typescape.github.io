@@ -33,6 +33,15 @@ const fragment = document.createDocumentFragment();
 // Connect to the WebSocket server (adjust for Render deployment)
 const socket = new WebSocket('wss://' + window.location.hostname);
 
+// Log WebSocket connection status
+socket.addEventListener('open', () => {
+    console.log('WebSocket connected');
+});
+
+socket.addEventListener('error', (error) => {
+    console.log('WebSocket error:', error);
+});
+
 // Listen for messages from the server (throttled for performance)
 let lastUpdateTime = 0;
 const updateInterval = 100; // Milliseconds to throttle updates
@@ -65,6 +74,8 @@ const createGrid = (characters) => {
     // Clear existing grid
     gridContainer.innerHTML = '';
 
+    const fragment = document.createDocumentFragment();
+
     characters.forEach((char, index) => {
         const div = document.createElement('div');
         div.classList.add('character');
@@ -91,25 +102,4 @@ const createGrid = (characters) => {
                 input.value = event.key;  // Directly replace the character
 
                 // Send the updated character to the server
-                socket.send(JSON.stringify({ type: 'update', index: index, char: event.key }));
-            }
-        });
-
-        // Append the div to the fragment for batch DOM insertion
-        fragment.appendChild(div);
-    });
-
-    // Once all elements are created, append them to the grid container
-    gridContainer.appendChild(fragment);
-};
-
-// Initially create the grid with default characters
-createGrid(allCharacters);
-
-// Function to send initial state to the server (when page is loaded)
-const sendInitialState = () => {
-    socket.send(JSON.stringify({ type: 'initial', characters: allCharacters }));
-};
-
-// Send initial state when the page is loaded
-window.addEventListener('load', sendInitialState);
+                socket.send(JSON.stringify({ index: index, char: event.key }));
