@@ -13,11 +13,6 @@ wss.on('connection', (ws) => {
     console.log('New client connected');
     connections.push(ws);
 
-    // Log WebSocket open event
-    ws.on('open', () => {
-        console.log('WebSocket connection established');
-    });
-
     // When a message is received from a client
     ws.on('message', (message) => {
         console.log('Received message: ' + message);
@@ -34,10 +29,6 @@ wss.on('connection', (ws) => {
         // Remove disconnected client from the list
         connections = connections.filter(client => client !== ws);
         console.log('Client disconnected');
-    });
-
-    ws.on('error', (error) => {
-        console.log('WebSocket error:', error);
     });
 });
 
