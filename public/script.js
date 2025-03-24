@@ -9,13 +9,13 @@ const characters = [
     '<', '>', '?', '~', ' ', '\n'
 ];
 
-// Total number of characters (1,000 in total)
-const totalBoxes = 1000;
+// Total number of characters (5,000 in total)
+const totalBoxes = 8320;
 
 // Create grid elements dynamically
 const gridContainer = document.querySelector('.grid-container');
 
-// Function to generate an array of characters for 1000 boxes (repeat the characters as needed)
+// Function to generate an array of characters for 8320 boxes (repeat the characters as needed)
 const generateCharacters = (total) => {
     const result = [];
     while (result.length < total) {
@@ -24,23 +24,36 @@ const generateCharacters = (total) => {
     return result.slice(0, total);
 };
 
-// Generate 1000 characters to be placed in the grid
+// Generate characters to be placed in the grid
 const allCharacters = generateCharacters(totalBoxes);
 
-// Connect to the WebSocket server
-const socket = new WebSocket('ws://' + window.location.hostname + ':3000');
+// Create a document fragment for better performance during DOM updates
+const fragment = document.createDocumentFragment();
 
-// Listen for messages from the server
+// Connect to the WebSocket server
+const socket = new WebSocket('ws://' + window.location.hostname + ':3000'); // Modify for Render deployment if necessary
+
+// Listen for messages from the server (throttled for performance)
+let lastUpdateTime = 0;
+const updateInterval = 100; // Milliseconds to throttle updates
+
 socket.addEventListener('message', function (event) {
+    const currentTime = Date.now();
+    if (currentTime - lastUpdateTime < updateInterval) return; // Throttle updates to prevent too many
+
+    lastUpdateTime = currentTime;
+
     const updatedChar = JSON.parse(event.data);
     const charIndex = updatedChar.index;
 
     // Update the corresponding character input on the page
     const characterDiv = document.querySelector(`.character[data-index="${charIndex}"] input`);
-    characterDiv.value = updatedChar.char;
+    if (characterDiv) {
+        characterDiv.value = updatedChar.char;
+    }
 });
 
-// Function to create and display grid
+// Function to create and display the grid
 allCharacters.forEach((char, index) => {
     const div = document.createElement('div');
     div.classList.add('character');
@@ -61,7 +74,7 @@ allCharacters.forEach((char, index) => {
         input.focus();  // Focus on the input when the character is clicked
     });
 
-    // Add event listener for keypress to replace character directly
+    // Add event listener for keydown to replace character directly
     input.addEventListener('keydown', (event) => {
         if (event.key.length === 1) {  // Only proceed if it's a single character key
             input.value = event.key;  // Directly replace the character
@@ -71,5 +84,9 @@ allCharacters.forEach((char, index) => {
         }
     });
 
-    gridContainer.appendChild(div);
+    // Append the div to the fragment for batch DOM insertion
+    fragment.appendChild(div);
 });
+
+// Once all elements are created, append them to the grid container
+gridContainer.appendChild(fragment);
