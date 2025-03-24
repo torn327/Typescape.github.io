@@ -38,16 +38,8 @@ socket.addEventListener('open', () => {
     console.log('WebSocket connected');
 });
 
-// Listen for messages from the server (throttled for performance)
-let lastUpdateTime = 0;
-const updateInterval = 100; // Milliseconds to throttle updates
-
+// Listen for messages from the server
 socket.addEventListener('message', function (event) {
-    const currentTime = Date.now();
-    if (currentTime - lastUpdateTime < updateInterval) return; // Throttle updates to prevent too many
-
-    lastUpdateTime = currentTime;
-
     const data = JSON.parse(event.data);
 
     if (data.type === 'initial') {
