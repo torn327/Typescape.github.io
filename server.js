@@ -1,9 +1,9 @@
 const WebSocket = require('ws');
 const express = require('express');
-const http = require('http');
+const http = require('http');  // Use http instead of https since Render provides SSL automatically
 
 const app = express();
-const server = http.createServer(app);
+const server = http.createServer(app);  // Use http server instead of https
 const wss = new WebSocket.Server({ server });
 
 let connections = [];
@@ -36,7 +36,7 @@ wss.on('connection', (ws) => {
 app.use(express.static('public'));  // Make sure you have a 'public' folder with your frontend files
 
 // Start the server
-const port = process.env.PORT || 10000;  // Make sure the port is correct for your environment (Render might change this)
+const port = process.env.PORT || 10000;  // Render assigns a dynamic port for your app
 server.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
