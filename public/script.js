@@ -9,7 +9,7 @@ const characters = [
     '<', '>', '?', '~', ' ', '\n'
 ];
 
-// Total number of characters (5,000 in total)
+// Total number of characters (8320 in total)
 const totalBoxes = 8320;
 
 // Create grid elements dynamically
@@ -30,8 +30,8 @@ const allCharacters = generateCharacters(totalBoxes);
 // Create a document fragment for better performance during DOM updates
 const fragment = document.createDocumentFragment();
 
-// Connect to the WebSocket server
-const socket = new WebSocket('ws://' + window.location.hostname + ':3000'); // Modify for Render deployment if necessary
+// Connect to the WebSocket server (adjust for Render deployment)
+const socket = new WebSocket('wss://' + window.location.hostname + ':3000');
 
 // Listen for messages from the server (throttled for performance)
 let lastUpdateTime = 0;
