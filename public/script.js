@@ -65,8 +65,6 @@ const createGrid = (characters) => {
     // Clear existing grid
     gridContainer.innerHTML = '';
 
-    const fragment = document.createDocumentFragment();
-
     characters.forEach((char, index) => {
         const div = document.createElement('div');
         div.classList.add('character');
@@ -93,7 +91,7 @@ const createGrid = (characters) => {
                 input.value = event.key;  // Directly replace the character
 
                 // Send the updated character to the server
-                socket.send(JSON.stringify({ index: index, char: event.key }));
+                socket.send(JSON.stringify({ type: 'update', index: index, char: event.key }));
             }
         });
 
