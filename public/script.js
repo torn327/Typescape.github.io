@@ -31,7 +31,7 @@ const allCharacters = generateCharacters(totalBoxes);
 const fragment = document.createDocumentFragment();
 
 // Connect to the WebSocket server (adjust for Render deployment)
-const socket = new WebSocket('wss://' + window.location.hostname + ':3000');
+const socket = new WebSocket('wss://' + window.location.hostname);
 
 // Listen for messages from the server (throttled for performance)
 let lastUpdateTime = 0;
