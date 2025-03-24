@@ -1,0 +1,72 @@
+/* Basic styling for the grid */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e5e5e5;  /* Slightly darker background for better contrast */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+/* Grid container setup */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20px, 1fr)); /* Dynamic number of columns */
+    grid-template-rows: repeat(auto-fill, minmax(20px, 1fr));    /* Dynamic number of rows */
+    width: 100vw;  /* Full width of the viewport */
+    height: 100vh; /* Full height of the viewport */
+    gap: 0;  /* No gap between characters */
+    position: absolute;
+    top: 0;
+    left: 0;
+    will-change: transform; /* Optimizing for transforms */
+}
+
+/* Character grid cell styling */
+.character {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f8f8f8;  /* Soft light gray background for the character */
+    font-size: 14px;  /* Adjusted font size */
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.2s ease, transform 0.1s ease;  /* Smooth transition */
+    user-select: none;  /* Disable selection */
+    width: 100%;  /* Make sure it fills the entire column */
+    height: 100%; /* Make sure it fills the entire row */
+    box-sizing: border-box; /* Ensures padding and borders are included in width/height */
+}
+
+/* Input field inside each character */
+.character-input {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background-color: transparent;
+    text-align: center;
+    font-size: 14px; /* Adjust font size to match the boxes */
+    font-family: 'Courier New', monospace;
+    outline: none;
+    color: #333;  /* Dark gray text for better readability */
+    letter-spacing: -0.5px;  /* Bring letters closer together */
+}
+
+/* Slight shadow effect for depth */
+.character-input:focus {
+    background-color: #d9d9d9;  /* Soft gray when focused */
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2); /* Inner shadow for depth */
+}
+
+/* Subtle hover effect (doesn't interfere with letter proximity) */
+.character:hover {
+    background-color: #e0e0e0;  /* Slightly darker gray when hovered */
+    transform: scale(1.05); /* Slight scale effect for interactivity */
+}
+
+/* Disable text selection to prevent accidental highlighting */
+.character-input::selection {
+    background-color: transparent; /* Prevent selection highlight */
+}

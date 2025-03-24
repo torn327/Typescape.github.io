@@ -26,16 +26,17 @@ wss.on('connection', (ws) => {
     });
 
     ws.on('close', () => {
+        // Remove disconnected client from the list
         connections = connections.filter(client => client !== ws);
         console.log('Client disconnected');
     });
 });
 
 // Serve static files (index.html, CSS, JS)
-app.use(express.static('public'));
+app.use(express.static('public'));  // Make sure you have a 'public' folder with your frontend files
 
 // Start the server
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000;  // Make sure the port is correct for your environment (Render might change this)
 server.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
