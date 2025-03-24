@@ -43,50 +43,75 @@ socket.addEventListener('message', function (event) {
 
     lastUpdateTime = currentTime;
 
-    const updatedChar = JSON.parse(event.data);
-    const charIndex = updatedChar.index;
+    const data = JSON.parse(event.data);
 
-    // Update the corresponding character input on the page
-    const characterDiv = document.querySelector(`.character[data-index="${charIndex}"] input`);
-    if (characterDiv) {
-        characterDiv.value = updatedChar.char;
+    if (data.type === 'initial') {
+        // Set the initial characters on the page
+        allCharacters.length = 0; // Clear the current characters
+        allCharacters.push(...data.characters); // Populate with the initial characters from the server
+        createGrid(allCharacters); // Re-create the grid
+    } else if (data.type === 'update') {
+        // Update the corresponding character input on the page
+        const updatedChar = data;
+        const characterDiv = document.querySelector(`.character[data-index="${updatedChar.index}"] input`);
+        if (characterDiv) {
+            characterDiv.value = updatedChar.char;
+        }
     }
 });
 
 // Function to create and display the grid
-allCharacters.forEach((char, index) => {
-    const div = document.createElement('div');
-    div.classList.add('character');
-    div.dataset.index = index;  // Store the index to identify the character
+const createGrid = (characters) => {
+    // Clear existing grid
+    gridContainer.innerHTML = '';
 
-    // Create an input field for each character
-    const input = document.createElement('input');
-    input.classList.add('character-input');
-    input.value = char;  // Set initial character as the value
-    input.maxLength = 1;  // Ensure only one character can be typed
-    input.dataset.index = index;  // Store the index to identify the character
+    const fragment = document.createDocumentFragment();
 
-    // Add the input field to the div
-    div.appendChild(input);
+    characters.forEach((char, index) => {
+        const div = document.createElement('div');
+        div.classList.add('character');
+        div.dataset.index = index;  // Store the index to identify the character
 
-    // Add click event listener to select the character and focus on input
-    div.addEventListener('click', () => {
-        input.focus();  // Focus on the input when the character is clicked
+        // Create an input field for each character
+        const input = document.createElement('input');
+        input.classList.add('character-input');
+        input.value = char;  // Set initial character as the value
+        input.maxLength = 1;  // Ensure only one character can be typed
+        input.dataset.index = index;  // Store the index to identify the character
+
+        // Add the input field to the div
+        div.appendChild(input);
+
+        // Add click event listener to select the character and focus on input
+        div.addEventListener('click', () => {
+            input.focus();  // Focus on the input when the character is clicked
+        });
+
+        // Add event listener for keydown to replace character directly
+        input.addEventListener('keydown', (event) => {
+            if (event.key.length === 1) {  // Only proceed if it's a single character key
+                input.value = event.key;  // Directly replace the character
+
+                // Send the updated character to the server
+                socket.send(JSON.stringify({ index: index, char: event.key }));
+            }
+        });
+
+        // Append the div to the fragment for batch DOM insertion
+        fragment.appendChild(div);
     });
 
-    // Add event listener for keydown to replace character directly
-    input.addEventListener('keydown', (event) => {
-        if (event.key.length === 1) {  // Only proceed if it's a single character key
-            input.value = event.key;  // Directly replace the character
+    // Once all elements are created, append them to the grid container
+    gridContainer.appendChild(fragment);
+};
 
-            // Send the updated character to the server
-            socket.send(JSON.stringify({ index: index, char: event.key }));
-        }
-    });
+// Initially create the grid with default characters
+createGrid(allCharacters);
 
-    // Append the div to the fragment for batch DOM insertion
-    fragment.appendChild(div);
-});
+// Function to send initial state to the server (when page is loaded)
+const sendInitialState = () => {
+    socket.send(JSON.stringify({ type: 'initial', characters: allCharacters }));
+};
 
-// Once all elements are created, append them to the grid container
-gridContainer.appendChild(fragment);
+// Send initial state when the page is loaded
+window.addEventListener('load', sendInitialState);
